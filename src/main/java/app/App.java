@@ -1,63 +1,52 @@
 package app;
 
+import java.util.ArrayList;
 import java.util.List;
-import lib.ReadTxt;
-import lib.Symvasiouxos;
+import lib.EmployeeFactory;
 import lib.Misthos;
-import lib.Ypsilomisthos;
-import lib.Person; 
-import lib.Xamilomisthos;
+import lib.Ypallhlos; 
+import lib.MisthosFactory;
 
 public class App {
-    
-    
-    static void createInstances() {
+    // create instances of employees using a factory (MisthosFactory)   
+    static void createInstances(MisthosFactory factory) {
         
-        //pass filepath into reader
-        ReadTxt reader = new ReadTxt("C:/Users/nitea/Desktop/IHU/sxediastika protypa/1/contracts.txt");
-
-        // Store employee information
-        Person[] employees = new Person[4];
-        employees[0] = new Person("Jim", "Black", 1);
-        employees[1] = new Person("Mary", "Green", 2);
-        employees[2] = new Person("Nick", "Yellow", 5);
-        employees[3] = new Person("Kelly", "Red", 7);
-
-        // Create different types of employees
-        Misthos[] misthosArray = new Misthos[employees.length];
-        for (int i = 0; i < employees.length; i++) {
-            switch (employees[i].getId()) {
-                case 2:
-                    //Ypsilomisthos
-                    misthosArray[i] = new Ypsilomisthos(employees[i].getFName(), employees[i].getLName(), employees[i].getId());
-                    break;
-                case 1:
-                    //Xamilomisthos
-                    misthosArray[i] = new Xamilomisthos(employees[i].getFName(), employees[i].getLName(), employees[i].getId());
-                    break;
-                default:
-                    /*Symvasiouxos*/
-                    misthosArray[i] = new Symvasiouxos(employees[i].getFName(), employees[i].getLName(), employees[i].getId(), reader);
-                    break;
-            }
+        // store employee information in a list
+        List<Ypallhlos> employees = new ArrayList<>();
+        employees.add(new Ypallhlos("Jim", "Black", 1, "xamilomisthos"));
+        employees.add(new Ypallhlos("Mary", "Green", 2, "ypsilomisthos"));
+        employees.add(new Ypallhlos("Nick", "Yellow", 5, "symvasiouxos"));
+        employees.add(new Ypallhlos("Kelly", "Red", 7, "symvasiouxos"));
+        employees.add(new Ypallhlos("Meredith", "Gray", 12, "manager"));
+        employees.add(new Ypallhlos("Alabaster", "White", 13, "manager"));
+        employees.add(new Ypallhlos("Purpureus", "Purple", 14, "manager"));
+        employees.add(new Ypallhlos("Cinnabar", "Vermilion", 15, "manager"));
+     
+        // create different types of employees using the factory
+        List<Misthos> misthosList = new ArrayList<>();
+        for (Ypallhlos employee : employees) {
+            misthosList.add(factory.createMisthos(employee));
         }
 
         // calculate total misthos for each employee 
-        calculateTotalMisthos(misthosArray);
+        calculateTotalMisthos(misthosList);
     }
-
-    static void calculateTotalMisthos(Misthos[] misthosArray) {
+    //calculate total misthos for each employee
+    static void calculateTotalMisthos(List<Misthos> misthosList) {
         List<String> months = List.of("JUNE", "JULY", "AUGUST");
 
-        
-        for (Misthos employee : misthosArray) {
+        for (Misthos employee : misthosList) {
             float totalMisthos = employee.getTotalMisthos(months);
-            //toString method from Person combines fname and lname
+            // toString method from Person combines fname and lname
             System.out.println(employee.toString() + ": " + totalMisthos);
         }
     }
     
     public static void main(String[] args) {
-        createInstances();
+        // create an instance of the EmployeeFactory, which implements MisthosFactory
+        MisthosFactory factory = new EmployeeFactory();
+        
+        // call createInstances method to create employee instances using the factory
+        createInstances(factory);
     }
 }
